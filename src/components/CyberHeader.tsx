@@ -11,7 +11,7 @@ export const CyberHeader = () => {
         </h2>
         <div className="w-32 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4 cyber-glow" />
         <p className="text-accent mt-4 text-lg uppercase tracking-wide">
-          Elite Payment Gateway System
+          Elite Toolkit Access System
         </p>
       </div>
     </header>
