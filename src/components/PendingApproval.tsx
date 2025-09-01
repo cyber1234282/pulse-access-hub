@@ -47,7 +47,7 @@ export const PendingApproval = () => {
             Account Pending
           </CardTitle>
           <p className="text-accent text-lg mt-4 modern-text font-medium">
-            Your account is pending approval.
+            HELLO, ACCOUNT CREATED. NOW IT'S PENDING. MAKE IT APPROVED.
           </p>
         </CardHeader>
         <CardContent className="text-center space-y-6">

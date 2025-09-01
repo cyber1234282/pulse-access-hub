@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Users, Settings, Check, X } from "lucide-react";
+import { LogOut, Users, Settings, Check, X, MessageSquare, AlertTriangle } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -21,6 +22,9 @@ interface AdminSettings {
   id: string;
   telegram_link: string | null;
   whatsapp_number: string | null;
+  app_update_mode: boolean;
+  last_message_sent: string | null;
+  message_sent_at: string | null;
 }
 
 export const AdminPanel = () => {
@@ -28,6 +32,7 @@ export const AdminPanel = () => {
   const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null);
   const [telegramLink, setTelegramLink] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -93,6 +98,7 @@ export const AdminPanel = () => {
     const settings = {
       telegram_link: telegramLink || null,
       whatsapp_number: whatsappNumber || null,
+      app_update_mode: adminSettings?.app_update_mode || false,
     };
 
     if (adminSettings) {
@@ -112,6 +118,7 @@ export const AdminPanel = () => {
           title: "Success",
           description: "Settings updated successfully",
         });
+        fetchAdminSettings();
       }
     } else {
       const { error } = await supabase
@@ -131,6 +138,97 @@ export const AdminPanel = () => {
         });
         fetchAdminSettings();
       }
+    }
+  };
+
+  const sendBroadcastMessage = async () => {
+    if (!broadcastMessage.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a message to send",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("user_messages")
+        .insert([
+          {
+            message_text: broadcastMessage,
+            message_type: "broadcast",
+          },
+        ]);
+
+      if (error) throw error;
+
+      // Update admin settings with last message
+      if (adminSettings) {
+        await supabase
+          .from("admin_settings")
+          .update({
+            last_message_sent: broadcastMessage,
+            message_sent_at: new Date().toISOString(),
+          })
+          .eq('id', adminSettings.id);
+      }
+
+      toast({
+        title: "Message Sent",
+        description: "Broadcast message sent to all users successfully",
+      });
+
+      setBroadcastMessage("");
+      fetchAdminSettings();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleUpdateMode = async () => {
+    try {
+      const newMode = !adminSettings?.app_update_mode;
+      
+      if (adminSettings) {
+        const { error } = await supabase
+          .from("admin_settings")
+          .update({
+            app_update_mode: newMode,
+          })
+          .eq('id', adminSettings.id);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('admin_settings')
+          .insert({
+            app_update_mode: newMode,
+            telegram_link: telegramLink || null,
+            whatsapp_number: whatsappNumber || null,
+          });
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: newMode ? "Update Mode Activated" : "Update Mode Deactivated",
+        description: newMode 
+          ? "All users now have restricted access" 
+          : "All users now have full access restored",
+      });
+
+      fetchAdminSettings();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -165,6 +263,12 @@ export const AdminPanel = () => {
           <div className="flex items-center space-x-4">
             <h1 className="text-3xl font-bold cyber-text">ADMIN PANEL</h1>
             <Badge className="cyber-glow">BLACK HACKERS TEAM</Badge>
+            {adminSettings?.app_update_mode && (
+              <Badge variant="destructive" className="animate-pulse">
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                UPDATE MODE ACTIVE
+              </Badge>
+            )}
           </div>
           <Button onClick={handleLogout} variant="outline" className="cyber-button">
             <LogOut className="w-4 h-4 mr-2" />
@@ -208,6 +312,65 @@ export const AdminPanel = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* App Update Mode */}
+        <Card className="cyber-glow">
+          <CardHeader>
+            <CardTitle className="cyber-text flex items-center">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              App Update Mode
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {adminSettings?.app_update_mode ? "Update mode is ACTIVE - Users have restricted access" : "Update mode is INACTIVE - Users have normal access"}
+              </span>
+              <Badge variant={adminSettings?.app_update_mode ? "destructive" : "secondary"}>
+                {adminSettings?.app_update_mode ? "RESTRICTED" : "NORMAL"}
+              </Badge>
+            </div>
+            <Button 
+              onClick={toggleUpdateMode} 
+              variant={adminSettings?.app_update_mode ? "destructive" : "outline"}
+              className="w-full cyber-button"
+            >
+              {adminSettings?.app_update_mode ? "🔓 Restore User Access" : "🔒 Activate Update Mode"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Broadcast Message */}
+        <Card className="cyber-glow">
+          <CardHeader>
+            <CardTitle className="cyber-text flex items-center">
+              <MessageSquare className="w-5 h-5 mr-2" />
+              Send Message to All Users
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              placeholder="Enter your message for all users..."
+              value={broadcastMessage}
+              onChange={(e) => setBroadcastMessage(e.target.value)}
+              className="bg-muted border-primary/30 focus:border-primary resize-none"
+              rows={4}
+            />
+            <Button onClick={sendBroadcastMessage} className="w-full cyber-button">
+              📢 Send Broadcast Message
+            </Button>
+            {adminSettings?.last_message_sent && (
+              <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                <strong>Last message:</strong> "{adminSettings.last_message_sent}" 
+                {adminSettings.message_sent_at && (
+                  <div className="mt-1">
+                    <strong>Sent:</strong> {new Date(adminSettings.message_sent_at).toLocaleString()}
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* User Management */}
         <Card className="cyber-glow">

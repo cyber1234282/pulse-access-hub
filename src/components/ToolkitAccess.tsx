@@ -4,7 +4,7 @@ import { CheckCircle } from "lucide-react";
 
 export const ToolkitAccess = () => {
   const handleAccessToolkit = () => {
-    window.open("https://unban-pulse-number.vercel.app/", "_blank");
+    window.open("https://github.com/yourusername/yourrepo/blob/main/codes.html", "_blank");
   };
 
   return (
@@ -35,7 +35,7 @@ export const ToolkitAccess = () => {
             onClick={handleAccessToolkit}
             className="w-full text-xl py-6 animate-pulse"
           >
-            🔓 Access Toolkit
+            Access Toolkit
           </CyberButton>
 
           <p className="text-xs text-muted-foreground uppercase tracking-wide">

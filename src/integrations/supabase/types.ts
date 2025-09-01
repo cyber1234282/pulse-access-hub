@@ -16,22 +16,31 @@ export type Database = {
     Tables: {
       admin_settings: {
         Row: {
+          app_update_mode: boolean | null
           created_at: string
           id: string
+          last_message_sent: string | null
+          message_sent_at: string | null
           telegram_link: string | null
           updated_at: string
           whatsapp_number: string | null
         }
         Insert: {
+          app_update_mode?: boolean | null
           created_at?: string
           id?: string
+          last_message_sent?: string | null
+          message_sent_at?: string | null
           telegram_link?: string | null
           updated_at?: string
           whatsapp_number?: string | null
         }
         Update: {
+          app_update_mode?: boolean | null
           created_at?: string
           id?: string
+          last_message_sent?: string | null
+          message_sent_at?: string | null
           telegram_link?: string | null
           updated_at?: string
           whatsapp_number?: string | null
@@ -62,6 +71,30 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_messages: {
+        Row: {
+          id: string
+          message_text: string
+          message_type: string | null
+          sent_at: string
+          sent_by: string | null
+        }
+        Insert: {
+          id?: string
+          message_text: string
+          message_type?: string | null
+          sent_at?: string
+          sent_by?: string | null
+        }
+        Update: {
+          id?: string
+          message_text?: string
+          message_type?: string | null
+          sent_at?: string
+          sent_by?: string | null
         }
         Relationships: []
       }

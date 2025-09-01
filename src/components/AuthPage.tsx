@@ -45,7 +45,7 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       return;
     }
 
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}`;
     
     const { error } = await supabase.auth.signUp({
       email,

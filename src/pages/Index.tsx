@@ -5,11 +5,12 @@ import { AuthPage } from "@/components/AuthPage";
 import { PendingApproval } from "@/components/PendingApproval";
 import { ToolkitAccess } from "@/components/ToolkitAccess";
 import { AdminPanel } from "@/components/AdminPanel";
+import { UpdateMode } from "@/components/UpdateMode";
 import { ContactIcons } from "@/components/ContactIcons";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-type AppState = "auth" | "pending-approval" | "toolkit-access" | "admin";
+type AppState = "auth" | "pending-approval" | "toolkit-access" | "admin" | "update-mode";
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>("auth");
@@ -76,9 +77,18 @@ const Index = () => {
       const userIsAdmin = !!roleData;
       setIsAdmin(userIsAdmin);
       
+      // Check for app update mode first
+      const { data: adminSettings } = await supabase
+        .from('admin_settings')
+        .select('app_update_mode')
+        .limit(1)
+        .maybeSingle();
+
       // Set app state based on user status and role
       if (userIsAdmin) {
         setAppState("admin");
+      } else if (adminSettings?.app_update_mode) {
+        setAppState("update-mode");
       } else if (data.status === 'approved') {
         setAppState("toolkit-access");
       } else {
@@ -110,6 +120,8 @@ const Index = () => {
     switch (appState) {
       case "admin":
         return <AdminPanel />;
+      case "update-mode":
+        return <UpdateMode />;
       case "pending-approval":
         return <PendingApproval />;
       case "toolkit-access":
