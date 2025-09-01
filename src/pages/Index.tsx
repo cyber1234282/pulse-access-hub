@@ -4,17 +4,19 @@ import { CyberHeader } from "@/components/CyberHeader";
 import { AuthPage } from "@/components/AuthPage";
 import { PendingApproval } from "@/components/PendingApproval";
 import { ToolkitAccess } from "@/components/ToolkitAccess";
+import { AdminPanel } from "@/components/AdminPanel";
 import { ContactIcons } from "@/components/ContactIcons";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-type AppState = "auth" | "pending-approval" | "toolkit-access";
+type AppState = "auth" | "pending-approval" | "toolkit-access" | "admin";
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>("auth");
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -62,8 +64,22 @@ const Index = () => {
     
     if (data) {
       setUserProfile(data);
-      // Set app state based on user status
-      if (data.status === 'approved') {
+      
+      // Check if user is admin
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      const userIsAdmin = !!roleData;
+      setIsAdmin(userIsAdmin);
+      
+      // Set app state based on user status and role
+      if (userIsAdmin) {
+        setAppState("admin");
+      } else if (data.status === 'approved') {
         setAppState("toolkit-access");
       } else {
         setAppState("pending-approval");
@@ -92,6 +108,8 @@ const Index = () => {
     }
 
     switch (appState) {
+      case "admin":
+        return <AdminPanel />;
       case "pending-approval":
         return <PendingApproval />;
       case "toolkit-access":
