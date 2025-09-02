@@ -4,7 +4,9 @@ import { CheckCircle } from "lucide-react";
 
 export const ToolkitAccess = () => {
   const handleAccessToolkit = () => {
-    window.open("https://github.com/yourusername/yourrepo/blob/main/codes.html", "_blank");
+    // This should be replaced with your actual GitHub repo URL
+    const githubRepoUrl = "https://raw.githubusercontent.com/yourusername/yourrepo/main/codes.html";
+    window.open(githubRepoUrl, "_blank");
   };
 
   return (

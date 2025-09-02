@@ -7,6 +7,7 @@ import { ToolkitAccess } from "@/components/ToolkitAccess";
 import { AdminPanel } from "@/components/AdminPanel";
 import { UpdateMode } from "@/components/UpdateMode";
 import { ContactIcons } from "@/components/ContactIcons";
+import { NotificationSystem } from "@/components/NotificationSystem";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -123,9 +124,19 @@ const Index = () => {
       case "update-mode":
         return <UpdateMode />;
       case "pending-approval":
-        return <PendingApproval />;
+        return (
+          <>
+            <PendingApproval />
+            <NotificationSystem />
+          </>
+        );
       case "toolkit-access":
-        return <ToolkitAccess />;
+        return (
+          <>
+            <ToolkitAccess />
+            <NotificationSystem />
+          </>
+        );
       default:
         return <AuthPage onAuthSuccess={handleAuthSuccess} />;
     }
