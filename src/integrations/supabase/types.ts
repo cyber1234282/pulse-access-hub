@@ -22,6 +22,7 @@ export type Database = {
           last_message_sent: string | null
           message_sent_at: string | null
           telegram_link: string | null
+          toolkit_url: string | null
           updated_at: string
           whatsapp_number: string | null
         }
@@ -32,6 +33,7 @@ export type Database = {
           last_message_sent?: string | null
           message_sent_at?: string | null
           telegram_link?: string | null
+          toolkit_url?: string | null
           updated_at?: string
           whatsapp_number?: string | null
         }
@@ -42,6 +44,7 @@ export type Database = {
           last_message_sent?: string | null
           message_sent_at?: string | null
           telegram_link?: string | null
+          toolkit_url?: string | null
           updated_at?: string
           whatsapp_number?: string | null
         }

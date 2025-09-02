@@ -1,12 +1,42 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CyberButton } from "./CyberButton";
 import { CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export const ToolkitAccess = () => {
+  const [toolkitUrl, setToolkitUrl] = useState<string>("");
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchToolkitUrl();
+  }, []);
+
+  const fetchToolkitUrl = async () => {
+    const { data, error } = await supabase
+      .from('admin_settings')
+      .select('toolkit_url')
+      .limit(1)
+      .maybeSingle();
+
+    if (data?.toolkit_url) {
+      setToolkitUrl(data.toolkit_url);
+    }
+  };
+
   const handleAccessToolkit = () => {
-    // This should be replaced with your actual GitHub repo URL
-    const githubRepoUrl = "https://raw.githubusercontent.com/yourusername/yourrepo/main/codes.html";
-    window.open(githubRepoUrl, "_blank");
+    if (!toolkitUrl) {
+      toast({
+        title: "Toolkit Not Available",
+        description: "The admin hasn't configured the toolkit URL yet. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Use the actual URL from admin settings
+    window.open(toolkitUrl, "_blank");
   };
 
   return (

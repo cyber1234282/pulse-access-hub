@@ -22,6 +22,7 @@ interface AdminSettings {
   id: string;
   telegram_link: string | null;
   whatsapp_number: string | null;
+  toolkit_url: string | null;
   app_update_mode: boolean;
   last_message_sent: string | null;
   message_sent_at: string | null;
@@ -32,6 +33,7 @@ export const AdminPanel = () => {
   const [adminSettings, setAdminSettings] = useState<AdminSettings | null>(null);
   const [telegramLink, setTelegramLink] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [toolkitUrl, setToolkitUrl] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -70,6 +72,7 @@ export const AdminPanel = () => {
       setAdminSettings(data);
       setTelegramLink(data.telegram_link || "");
       setWhatsappNumber(data.whatsapp_number || "");
+      setToolkitUrl(data.toolkit_url || "");
     }
   };
 
@@ -98,6 +101,7 @@ export const AdminPanel = () => {
     const settings = {
       telegram_link: telegramLink || null,
       whatsapp_number: whatsappNumber || null,
+      toolkit_url: toolkitUrl || null,
       app_update_mode: adminSettings?.app_update_mode || false,
     };
 
@@ -210,6 +214,7 @@ export const AdminPanel = () => {
             app_update_mode: newMode,
             telegram_link: telegramLink || null,
             whatsapp_number: whatsappNumber || null,
+            toolkit_url: toolkitUrl || null,
           });
 
         if (error) throw error;
@@ -457,6 +462,22 @@ export const AdminPanel = () => {
                 placeholder="+1234567890"
                 className="bg-muted border-primary/30 focus:border-primary"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="toolkit" className="text-accent uppercase tracking-wide">
+                Toolkit URL (GitHub Raw File URL)
+              </Label>
+              <Input
+                id="toolkit"
+                value={toolkitUrl}
+                onChange={(e) => setToolkitUrl(e.target.value)}
+                placeholder="https://raw.githubusercontent.com/username/repo/main/codes.html"
+                className="bg-muted border-primary/30 focus:border-primary"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Use the RAW GitHub URL for your codes.html file
+              </p>
             </div>
 
             <Button onClick={updateAdminSettings} className="cyber-button">
