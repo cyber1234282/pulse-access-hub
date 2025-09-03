@@ -26,43 +26,13 @@ export const ToolkitAccess = () => {
   };
 
   const handleAccessToolkit = () => {
-    if (!toolkitUrl) {
-      toast({
-        title: "Toolkit Not Available",
-        description: "The admin hasn't configured the toolkit URL yet. Please contact support.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Navigate to the internal toolkit page instead of external URL
+    window.open('/toolkit', '_blank');
     
-    try {
-      // Ensure the URL is properly formatted
-      const url = toolkitUrl.trim();
-      console.log("Opening toolkit URL:", url);
-      
-      // Open the URL in a new tab
-      const newWindow = window.open(url, "_blank", "noopener,noreferrer");
-      
-      if (!newWindow) {
-        toast({
-          title: "Popup Blocked",
-          description: "Please allow popups for this site and try again.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Toolkit Opened",
-          description: "The toolkit has been opened in a new tab.",
-        });
-      }
-    } catch (error) {
-      console.error("Error opening toolkit:", error);
-      toast({
-        title: "Error",
-        description: "Failed to open the toolkit. Please try again.",
-        variant: "destructive",
-      });
-    }
+    toast({
+      title: "Toolkit Opened",
+      description: "The BLACK HACKERS TEAM toolkit has been opened in a new tab.",
+    });
   };
 
   return (
