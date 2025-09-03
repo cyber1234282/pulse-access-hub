@@ -10,6 +10,8 @@ import { Toolkit } from "./pages/Toolkit";
 
 const queryClient = new QueryClient();
 
+console.log('App component loading with single BrowserRouter');
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
