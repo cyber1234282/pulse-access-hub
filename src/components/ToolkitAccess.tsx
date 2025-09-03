@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CyberButton } from "./CyberButton";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -25,15 +25,53 @@ export const ToolkitAccess = () => {
     }
   };
 
+  const [showToolkit, setShowToolkit] = useState(false);
+
   const handleAccessToolkit = () => {
-    // Navigate to the internal toolkit page instead of external URL
-    window.open('/toolkit', '_blank');
+    if (!toolkitUrl) {
+      toast({
+        title: "Toolkit Unavailable",
+        description: "Toolkit URL not configured. Please contact admin.",
+        variant: "destructive"
+      });
+      return;
+    }
     
+    setShowToolkit(true);
     toast({
-      title: "Toolkit Opened",
-      description: "The BLACK HACKERS TEAM toolkit has been opened in a new tab.",
+      title: "Toolkit Loaded",
+      description: "The BLACK HACKERS TEAM toolkit has been loaded securely.",
     });
   };
+
+  const handleCloseToolkit = () => {
+    setShowToolkit(false);
+  };
+
+  if (showToolkit) {
+    return (
+      <div className="min-h-screen bg-background relative">
+        {/* Close button */}
+        <div className="absolute top-4 right-4 z-50">
+          <CyberButton 
+            onClick={handleCloseToolkit}
+            className="p-2"
+          >
+            <X className="w-6 h-6" />
+          </CyberButton>
+        </div>
+        
+        {/* Fullscreen iframe */}
+        <iframe
+          src={toolkitUrl}
+          className="w-full h-screen border-0"
+          title="BLACK HACKERS TEAM Toolkit"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
@@ -62,6 +100,7 @@ export const ToolkitAccess = () => {
           <CyberButton 
             onClick={handleAccessToolkit}
             className="w-full text-xl py-6 animate-pulse"
+            disabled={!toolkitUrl}
           >
             Access Toolkit
           </CyberButton>
