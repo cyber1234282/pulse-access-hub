@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
+import { VerificationForm } from "./VerificationForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-type AuthState = "login" | "register";
+type AuthState = "login" | "register" | "verify";
 
 interface AuthPageProps {
   onAuthSuccess: () => void;
@@ -12,6 +13,7 @@ interface AuthPageProps {
 
 export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
   const [authState, setAuthState] = useState<AuthState>("login");
+  const [verificationData, setVerificationData] = useState<{ email: string; userId: string } | null>(null);
   const { toast } = useToast();
 
   const handleLogin = async (email: string, password: string) => {
@@ -45,17 +47,9 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       return;
     }
 
-    const redirectUrl = `${window.location.origin}/auth/callback`;
-    
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          email_confirm: true
-        }
-      }
     });
 
     if (error) {
@@ -64,12 +58,50 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
         description: error.message,
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Account Created",
-        description: "Check your email to verify your account",
-      });
+      return;
     }
+
+    if (data.user) {
+      // Send verification code
+      try {
+        const { error: functionError } = await supabase.functions.invoke('send-verification-code', {
+          body: { email, userId: data.user.id }
+        });
+
+        if (functionError) {
+          throw functionError;
+        }
+
+        setVerificationData({ email, userId: data.user.id });
+        setAuthState("verify");
+        
+        toast({
+          title: "Registration successful",
+          description: "Please check your email for a verification code.",
+        });
+      } catch (error: any) {
+        console.error("Error sending verification code:", error);
+        toast({
+          title: "Registration error",
+          description: "Failed to send verification code. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleVerificationSuccess = () => {
+    toast({
+      title: "Account Verified!",
+      description: "Your account has been verified. You can now log in.",
+    });
+    setAuthState("login");
+    setVerificationData(null);
+  };
+
+  const handleBackFromVerification = () => {
+    setAuthState("register");
+    setVerificationData(null);
   };
 
   return (
@@ -79,12 +111,19 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
           onLogin={handleLogin}
           onSwitchToRegister={() => setAuthState("register")}
         />
-      ) : (
+      ) : authState === "register" ? (
         <RegisterForm 
           onRegister={handleRegister}
           onSwitchToLogin={() => setAuthState("login")}
         />
-      )}
+      ) : authState === "verify" && verificationData ? (
+        <VerificationForm
+          email={verificationData.email}
+          userId={verificationData.userId}
+          onVerified={handleVerificationSuccess}
+          onBack={handleBackFromVerification}
+        />
+      ) : null}
     </div>
   );
 };

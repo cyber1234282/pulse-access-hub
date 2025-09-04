@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MessageCircle, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { openInAppBrowser } from "@/utils/inAppBrowser";
 
 interface AdminSettings {
   whatsapp_number: string;
@@ -28,13 +29,13 @@ export const ContactIcons = () => {
   const handleWhatsAppContact = () => {
     if (adminSettings?.whatsapp_number) {
       const message = encodeURIComponent("Hello admin, I need assistance");
-      window.open(`https://wa.me/${adminSettings.whatsapp_number.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+      openInAppBrowser(`https://wa.me/${adminSettings.whatsapp_number.replace(/[^0-9]/g, '')}?text=${message}`);
     }
   };
 
   const handleTelegramContact = () => {
     if (adminSettings?.telegram_link) {
-      window.open(adminSettings.telegram_link, '_blank');
+      openInAppBrowser(adminSettings.telegram_link);
     }
   };
 

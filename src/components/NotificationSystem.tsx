@@ -19,8 +19,8 @@ export const NotificationSystem = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Fetch existing messages
-    fetchMessages();
+    // Fetch unread messages
+    fetchUnreadMessages();
 
     // Set up real-time subscription for new messages
     const channel = supabase
@@ -34,14 +34,20 @@ export const NotificationSystem = () => {
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          setMessages(prev => [newMessage, ...prev]);
-          setUnreadCount(prev => prev + 1);
           
-          // Show toast notification
-          toast({
-            title: "New Message from Admin",
-            description: newMessage.message_text.substring(0, 100) + "...",
-            duration: 5000,
+          // Only show if it's not already read by this user
+          checkIfMessageRead(newMessage.id).then(isRead => {
+            if (!isRead) {
+              setMessages(prev => [newMessage, ...prev]);
+              setUnreadCount(prev => prev + 1);
+              
+              // Show popup notification
+              toast({
+                title: "🔔 New Admin Message",
+                description: newMessage.message_text.substring(0, 80) + "...",
+                duration: 8000,
+              });
+            }
           });
         }
       )
@@ -52,10 +58,18 @@ export const NotificationSystem = () => {
     };
   }, [toast]);
 
-  const fetchMessages = async () => {
+  const fetchUnreadMessages = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Get messages that haven't been read by this user
     const { data, error } = await supabase
       .from('user_messages')
-      .select('*')
+      .select(`
+        *,
+        user_message_reads!left(user_id)
+      `)
+      .is('user_message_reads.user_id', null)
       .order('sent_at', { ascending: false })
       .limit(10);
 
@@ -65,9 +79,39 @@ export const NotificationSystem = () => {
     }
   };
 
+  const checkIfMessageRead = async (messageId: string): Promise<boolean> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { data } = await supabase
+      .from('user_message_reads')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('message_id', messageId)
+      .maybeSingle();
+
+    return !!data;
+  };
+
+  const markMessageAsRead = async (messageId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Mark message as read
+    await supabase
+      .from('user_message_reads')
+      .insert({
+        user_id: user.id,
+        message_id: messageId
+      });
+
+    // Remove from local state
+    setMessages(prev => prev.filter(msg => msg.id !== messageId));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+
   const handleShowNotifications = () => {
     setShowNotifications(true);
-    setUnreadCount(0);
   };
 
   const formatDate = (dateString: string) => {
@@ -113,23 +157,43 @@ export const NotificationSystem = () => {
                 <div className="space-y-3">
                   {messages.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No messages yet
+                      No new messages
                     </p>
                   ) : (
                     messages.map((message) => (
                       <div
                         key={message.id}
-                        className="p-3 bg-muted/50 rounded-lg border border-primary/20"
+                        className="p-3 bg-muted/50 rounded-lg border border-primary/20 relative group"
                       >
-                        <p className="text-sm font-medium text-primary mb-1">
-                          Admin Broadcast
-                        </p>
+                        <div className="flex justify-between items-start mb-2">
+                          <p className="text-sm font-medium text-primary">
+                            🔔 Admin Notification
+                          </p>
+                          <Button
+                            onClick={() => markMessageAsRead(message.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
                         <p className="text-sm text-foreground mb-2">
                           {message.message_text}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(message.sent_at)}
-                        </p>
+                        <div className="flex justify-between items-center">
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(message.sent_at)}
+                          </p>
+                          <Button
+                            onClick={() => markMessageAsRead(message.id)}
+                            size="sm"
+                            variant="outline"
+                            className="h-6 text-xs px-2"
+                          >
+                            Mark as Read
+                          </Button>
+                        </div>
                       </div>
                     ))
                   )}

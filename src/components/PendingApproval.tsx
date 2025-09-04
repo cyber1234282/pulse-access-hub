@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { openInAppBrowser } from "@/utils/inAppBrowser";
 
 interface AdminSettings {
   whatsapp_number: string;
@@ -29,13 +30,13 @@ export const PendingApproval = () => {
   const handleWhatsAppContact = () => {
     if (adminSettings?.whatsapp_number) {
       const message = encodeURIComponent("Hello, I would like to make payment for toolkit access");
-      window.open(`https://wa.me/${adminSettings.whatsapp_number.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+      openInAppBrowser(`https://wa.me/${adminSettings.whatsapp_number.replace(/[^0-9]/g, '')}?text=${message}`);
     }
   };
 
   const handleTelegramContact = () => {
     if (adminSettings?.telegram_link) {
-      window.open(adminSettings.telegram_link, '_blank');
+      openInAppBrowser(adminSettings.telegram_link);
     }
   };
 
