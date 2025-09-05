@@ -77,6 +77,36 @@ export type Database = {
         }
         Relationships: []
       }
+      public_app_settings: {
+        Row: {
+          app_update_mode: boolean | null
+          created_at: string
+          id: string
+          telegram_link: string | null
+          toolkit_url: string | null
+          updated_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          app_update_mode?: boolean | null
+          created_at?: string
+          id?: string
+          telegram_link?: string | null
+          toolkit_url?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          app_update_mode?: boolean | null
+          created_at?: string
+          id?: string
+          telegram_link?: string | null
+          toolkit_url?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
       user_message_reads: {
         Row: {
           id: string
@@ -186,15 +216,7 @@ export type Database = {
       }
     }
     Views: {
-      public_app_settings: {
-        Row: {
-          app_update_mode: boolean | null
-          telegram_link: string | null
-          toolkit_url: string | null
-          whatsapp_number: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       is_admin: {
