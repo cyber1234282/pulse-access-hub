@@ -14,7 +14,7 @@ export const ContactIcons = () => {
   useEffect(() => {
     const fetchAdminSettings = async () => {
       const { data, error } = await supabase
-        .from('admin_settings')
+        .from('public_app_settings')
         .select('whatsapp_number, telegram_link')
         .maybeSingle();
       

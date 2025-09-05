@@ -80,7 +80,7 @@ const Index = () => {
       
       // Check for app update mode first
       const { data: adminSettings } = await supabase
-        .from('admin_settings')
+        .from('public_app_settings')
         .select('app_update_mode')
         .limit(1)
         .maybeSingle();

@@ -15,7 +15,7 @@ export const ToolkitAccess = () => {
 
   const fetchToolkitUrl = async () => {
     const { data, error } = await supabase
-      .from('admin_settings')
+      .from('public_app_settings')
       .select('toolkit_url')
       .limit(1)
       .maybeSingle();

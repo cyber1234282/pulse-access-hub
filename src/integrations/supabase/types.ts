@@ -186,7 +186,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_app_settings: {
+        Row: {
+          app_update_mode: boolean | null
+          telegram_link: string | null
+          toolkit_url: string | null
+          whatsapp_number: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       is_admin: {
