@@ -50,6 +50,9 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: undefined, // Disable Supabase email verification
+      }
     });
 
     if (error) {

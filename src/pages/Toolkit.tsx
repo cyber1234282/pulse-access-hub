@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { openInAppBrowser } from "@/utils/inAppBrowser";
 
 export const Toolkit = () => {
   useEffect(() => {
@@ -15,7 +16,13 @@ export const Toolkit = () => {
   }, []);
 
   const openSocialMedia = (platform: string, link: string) => {
-    window.open(link, "_blank", "noopener,noreferrer");
+    openInAppBrowser(link);
+  };
+
+  const openLink = (link: string) => {
+    if (link) {
+      openInAppBrowser(link);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -417,7 +424,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">TIKTOK HACK</h3>    
                     <p className="card-desc">INCREASE FOLLOWERS AND LIKES ON TIKTOK WITH OUR ADVANCED HACKING TOOL.</p>
-                    <a href="https://mass-randie-venomvishal-a24f6eec.koyeb.app/174040/TikFollowers_v1.apk?hash=AgADbR" className="card-button color-1" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://mass-randie-venomvishal-a24f6eec.koyeb.app/174040/TikFollowers_v1.apk?hash=AgADbR")} className="card-button color-1">DOWNLOAD APK</button>
                   </div>
                 </div>
 
@@ -428,7 +435,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">FACEBOOK HACK</h3>
                     <p className="card-desc">ACCESS FACEBOOK ACCOUNTS EASILY WITH OUR PROFESSIONAL HACKING TOOL.</p>
-                    <a href="https://mass-randie-venomvishal-a24f6eec.koyeb.app/174037/Facebook.apk?hash=AgADjh" className="card-button color-2" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://mass-randie-venomvishal-a24f6eec.koyeb.app/174037/Facebook.apk?hash=AgADjh")} className="card-button color-2">DOWNLOAD APK</button>
                   </div>
                 </div>
 
@@ -439,7 +446,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">INSTAGRAM HACK</h3>
                     <p className="card-desc">GAIN MORE FOLLOWERS AND ACCESS INSTAGRAM ACCOUNTS WITH EASE.</p>
-                    <a href="https://dl2.filesdwn.ir/url/php2/?uniq=8F1aQT7r" className="card-button color-3" target="_blank" rel="noopener noreferrer">DOWNLOAD TOOL</a>
+                    <button onClick={() => openLink("https://dl2.filesdwn.ir/url/php2/?uniq=8F1aQT7r")} className="card-button color-3">DOWNLOAD TOOL</button>
                   </div>
                 </div>
 
@@ -450,7 +457,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">WHATSAPP HACK</h3>
                     <p className="card-desc">READ WHATSAPP MESSAGES WITHOUT DETECTION WITH OUR ADVANCED TOOL.</p>
-                    <a href="https://play.google.com/store/apps/details?id=com.geeksoftapps.whatsweb" className="card-button color-4" target="_blank" rel="noopener noreferrer">GET APP</a>
+                    <button onClick={() => openLink("https://play.google.com/store/apps/details?id=com.geeksoftapps.whatsweb")} className="card-button color-4">GET APP</button>
                   </div>
                 </div>
 
@@ -461,7 +468,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">WIFI HACK</h3>
                     <p className="card-desc">CRACK WIFI NETWORKS AND OBTAIN PASSWORDS WITH OUR ADVANCED TOOL.</p>
-                    <a href="https://www.mediafire.com/file/3p30nrbpzr3kqsl/WI-FI_HACK_2025.apk/file" className="card-button color-5" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/3p30nrbpzr3kqsl/WI-FI_HACK_2025.apk/file")} className="card-button color-5">DOWNLOAD APK</button>
                   </div>
                 </div>
 
@@ -472,7 +479,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">SMS HACK</h3>
                     <p className="card-desc">SEND AND READ SMS MESSAGES WITHOUT DETECTION WITH OUR TOOL.</p>
-                    <a href="https://play.google.com/store/apps/details?id=com.frzinapps.smsforward" className="card-button color-6" target="_blank" rel="noopener noreferrer">GET APP</a>
+                    <button onClick={() => openLink("https://play.google.com/store/apps/details?id=com.frzinapps.smsforward")} className="card-button color-6">GET APP</button>
                   </div>
                 </div>
               </div>
@@ -488,7 +495,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">AVIATOR PREDICTOR FREE</h3>
                     <p className="card-desc">PREDICT AVIATOR GAME OUTCOMES WITH 99% ACCURACY USING AI ALGORITHMS.</p>
-                    <a href="https://www.mediafire.com/file/ryj6kr9f4agqtum/Aviator_Hack_V1.0_1.0.apk/file" className="card-button color-7" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/ryj6kr9f4agqtum/Aviator_Hack_V1.0_1.0.apk/file")} className="card-button color-7">DOWNLOAD APK</button>
                   </div>
                 </div>
 
@@ -499,7 +506,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">UNLIMITED GMAIL</h3>
                     <p className="card-desc">CREATE UNLIMITED GMAIL ACCOUNTS WITH OUR AUTOMATED TOOL.</p>
-                    <a href="https://www.mediafire.com/file/nnkxxbnz0awzfbm/Gmail_Creator.zip/file" className="card-button color-8" target="_blank" rel="noopener noreferrer">DOWNLOAD TOOL</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/nnkxxbnz0awzfbm/Gmail_Creator.zip/file")} className="card-button color-8">DOWNLOAD TOOL</button>
                   </div>
                 </div>
 
@@ -510,7 +517,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">CARD HACK</h3>
                     <p className="card-desc">GENERATE VALID CREDIT CARD NUMBERS FOR TESTING PURPOSES.</p>
-                    <a href="https://www.mediafire.com/file/g8dme5d0t7kf0vp/Card_Generator.zip/file" className="card-button color-9" target="_blank" rel="noopener noreferrer">DOWNLOAD TOOL</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/g8dme5d0t7kf0vp/Card_Generator.zip/file")} className="card-button color-9">DOWNLOAD TOOL</button>
                   </div>
                 </div>
               </div>
@@ -526,7 +533,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">CAMERA HACK</h3>
                     <p className="card-desc">ACCESS DEVICE CAMERAS REMOTELY WITH OUR ADVANCED TOOL.</p>
-                    <a href="https://www.mediafire.com/file/camera_hack.apk" className="card-button color-10" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/camera_hack.apk")} className="card-button color-10">DOWNLOAD APK</button>
                   </div>
                 </div>
 
@@ -537,7 +544,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">MICROPHONE HACK</h3>
                     <p className="card-desc">LISTEN TO CONVERSATIONS REMOTELY WITH OUR SPY TOOL.</p>
-                    <a href="https://www.mediafire.com/file/mic_hack.apk" className="card-button color-11" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/mic_hack.apk")} className="card-button color-11">DOWNLOAD APK</button>
                   </div>
                 </div>
 
@@ -548,7 +555,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">LOCATION TRACKER</h3>
                     <p className="card-desc">TRACK ANY DEVICE LOCATION IN REAL-TIME WITH GPS PRECISION.</p>
-                    <a href="https://www.mediafire.com/file/location_tracker.apk" className="card-button color-12" target="_blank" rel="noopener noreferrer">DOWNLOAD APK</a>
+                    <button onClick={() => openLink("https://www.mediafire.com/file/location_tracker.apk")} className="card-button color-12">DOWNLOAD APK</button>
                   </div>
                 </div>
               </div>
@@ -564,7 +571,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">HACKING TUTORIALS</h3>
                     <p className="card-desc">LEARN ADVANCED HACKING TECHNIQUES WITH OUR VIDEO TUTORIALS.</p>
-                    <a href="https://youtube.com/@blackhackersteam" className="card-button color-1" target="_blank" rel="noopener noreferrer">WATCH VIDEOS</a>
+                    <button onClick={() => openLink("https://youtube.com/@blackhackersteam")} className="card-button color-1">WATCH VIDEOS</button>
                   </div>
                 </div>
 
@@ -575,7 +582,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">HACKING GUIDES</h3>
                     <p className="card-desc">COMPREHENSIVE GUIDES AND DOCUMENTATION FOR ALL TOOLS.</p>
-                    <a href="https://t.me/BlacKHackerSTeaM1" className="card-button color-2" target="_blank" rel="noopener noreferrer">READ GUIDES</a>
+                    <button onClick={() => openLink("https://t.me/BlacKHackerSTeaM1")} className="card-button color-2">READ GUIDES</button>
                   </div>
                 </div>
 
@@ -586,7 +593,7 @@ export const Toolkit = () => {
                   <div className="card-content">
                     <h3 className="card-title">COMMUNITY SUPPORT</h3>
                     <p className="card-desc">JOIN OUR EXCLUSIVE HACKER COMMUNITY FOR SUPPORT AND UPDATES.</p>
-                    <a href="https://t.me/BlacKHackerSTeaM1" className="card-button color-3" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY</a>
+                    <button onClick={() => openLink("https://t.me/BlacKHackerSTeaM1")} className="card-button color-3">JOIN COMMUNITY</button>
                   </div>
                 </div>
               </div>
