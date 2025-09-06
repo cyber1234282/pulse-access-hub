@@ -47,32 +47,32 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       return;
     }
 
-    // Use Supabase OTP instead of magic link
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { 
-        shouldCreateUser: true,
-        emailRedirectTo: null // Disable magic link completely
-      }
-    });
+    try {
+      // Send OTP using our custom edge function
+      const { error } = await supabase.functions.invoke('send-verification-code', {
+        body: { email, userId: 'temp_id' }
+      });
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      // Set verification data for OTP verification
+      setVerificationData({ email, userId: 'temp_id' });
+      setAuthState("verify");
+      
       toast({
-        title: "Registration Failed",
-        description: error.message,
+        title: "Verification Code Sent",
+        description: "Please check your email for a 6-digit verification code.",
+      });
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Registration Failed", 
+        description: error.message || "Failed to send verification code",
         variant: "destructive",
       });
-      return;
     }
-
-    // Set verification data for OTP verification
-    setVerificationData({ email, userId: 'temp_id' });
-    setAuthState("verify");
-    
-    toast({
-      title: "Registration successful",
-      description: "Please check your email for a verification code.",
-    });
   };
 
   const handleVerificationSuccess = () => {

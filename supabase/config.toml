@@ -37,3 +37,6 @@ port = 54322
 
 [functions.send-verification-code]
 verify_jwt = false
+
+[functions.verify-otp]
+verify_jwt = false

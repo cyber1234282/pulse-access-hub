@@ -31,11 +31,9 @@ export const VerificationForm = ({ email, userId, onVerified, onBack }: Verifica
     setLoading(true);
 
     try {
-      // Use Supabase OTP verification
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: code,
-        type: 'email'
+      // Verify OTP using our custom edge function
+      const { data, error } = await supabase.functions.invoke('verify-otp', {
+        body: { email, code }
       });
 
       if (error) {
@@ -48,20 +46,10 @@ export const VerificationForm = ({ email, userId, onVerified, onBack }: Verifica
         return;
       }
 
-      if (data.user) {
-        // Update user profile status to approved if profile exists
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ status: 'approved' })
-          .eq('user_id', data.user.id);
-
-        if (profileError) {
-          console.error("Error updating profile:", profileError);
-        }
-
+      if (data.success) {
         toast({
           title: "Account Verified!",
-          description: "Your account has been successfully verified and approved.",
+          description: "Your account has been successfully verified and created.",
         });
 
         onVerified();
@@ -82,13 +70,9 @@ export const VerificationForm = ({ email, userId, onVerified, onBack }: Verifica
     setResending(true);
 
     try {
-      // Resend OTP using Supabase
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { 
-          shouldCreateUser: false,
-          emailRedirectTo: null 
-        }
+      // Resend OTP using our custom edge function
+      const { error } = await supabase.functions.invoke('send-verification-code', {
+        body: { email, userId }
       });
 
       if (error) {
