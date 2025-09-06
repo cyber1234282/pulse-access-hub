@@ -31,24 +31,14 @@ export const VerificationForm = ({ email, userId, onVerified, onBack }: Verifica
     setLoading(true);
 
     try {
-      // Check if code exists and is valid
-      const { data: verificationData, error } = await supabase
-        .from('verification_codes')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('code', code)
-        .eq('verified', false)
-        .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      // Use Supabase OTP verification
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: code,
+        type: 'email'
+      });
 
       if (error) {
-        console.error("Error checking verification code:", error);
-        throw new Error("Failed to verify code");
-      }
-
-      if (!verificationData) {
         toast({
           title: "Invalid or Expired Code",
           description: "The verification code is incorrect or has expired. Please try again.",
@@ -58,34 +48,24 @@ export const VerificationForm = ({ email, userId, onVerified, onBack }: Verifica
         return;
       }
 
-      // Mark code as verified
-      const { error: updateError } = await supabase
-        .from('verification_codes')
-        .update({ verified: true })
-        .eq('id', verificationData.id);
+      if (data.user) {
+        // Update user profile status to approved if profile exists
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ status: 'approved' })
+          .eq('user_id', data.user.id);
 
-      if (updateError) {
-        console.error("Error updating verification code:", updateError);
-        throw new Error("Failed to update verification status");
+        if (profileError) {
+          console.error("Error updating profile:", profileError);
+        }
+
+        toast({
+          title: "Account Verified!",
+          description: "Your account has been successfully verified and approved.",
+        });
+
+        onVerified();
       }
-
-      // Update user profile status to approved
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ status: 'approved' })
-        .eq('user_id', userId);
-
-      if (profileError) {
-        console.error("Error updating profile:", profileError);
-        throw new Error("Failed to update profile status");
-      }
-
-      toast({
-        title: "Account Verified!",
-        description: "Your account has been successfully verified and approved.",
-      });
-
-      onVerified();
     } catch (error: any) {
       console.error("Verification error:", error);
       toast({
@@ -102,8 +82,13 @@ export const VerificationForm = ({ email, userId, onVerified, onBack }: Verifica
     setResending(true);
 
     try {
-      const { error } = await supabase.functions.invoke('send-verification-code', {
-        body: { email, userId }
+      // Resend OTP using Supabase
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { 
+          shouldCreateUser: false,
+          emailRedirectTo: null 
+        }
       });
 
       if (error) {

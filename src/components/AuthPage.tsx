@@ -47,11 +47,12 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    // Use Supabase OTP instead of magic link
+    const { data, error } = await supabase.auth.signInWithOtp({
       email,
-      password,
-      options: {
-        emailRedirectTo: undefined, // Disable Supabase email verification
+      options: { 
+        shouldCreateUser: true,
+        emailRedirectTo: null // Disable magic link completely
       }
     });
 
@@ -64,33 +65,14 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       return;
     }
 
-    if (data.user) {
-      // Send verification code
-      try {
-        const { error: functionError } = await supabase.functions.invoke('send-verification-code', {
-          body: { email, userId: data.user.id }
-        });
-
-        if (functionError) {
-          throw functionError;
-        }
-
-        setVerificationData({ email, userId: data.user.id });
-        setAuthState("verify");
-        
-        toast({
-          title: "Registration successful",
-          description: "Please check your email for a verification code.",
-        });
-      } catch (error: any) {
-        console.error("Error sending verification code:", error);
-        toast({
-          title: "Registration error",
-          description: "Failed to send verification code. Please try again.",
-          variant: "destructive",
-        });
-      }
-    }
+    // Set verification data for OTP verification
+    setVerificationData({ email, userId: 'temp_id' });
+    setAuthState("verify");
+    
+    toast({
+      title: "Registration successful",
+      description: "Please check your email for a verification code.",
+    });
   };
 
   const handleVerificationSuccess = () => {

@@ -37,10 +37,14 @@ export const ToolkitAccess = () => {
       return;
     }
     
-    setShowToolkit(true);
+    // Use in-app browser instead of iframe for mobile compatibility
+    import("@/utils/inAppBrowser").then(({ openInAppBrowser }) => {
+      openInAppBrowser(toolkitUrl);
+    });
+    
     toast({
-      title: "Toolkit Loaded",
-      description: "The BLACK HACKERS TEAM toolkit has been loaded securely.",
+      title: "Toolkit Opened",
+      description: "The BLACK HACKERS TEAM toolkit has been opened in-app.",
     });
   };
 
@@ -61,13 +65,15 @@ export const ToolkitAccess = () => {
           </CyberButton>
         </div>
         
-        {/* Fullscreen iframe */}
+        {/* Fullscreen iframe with proper loading */}
         <iframe
           src={toolkitUrl}
           className="w-full h-screen border-0"
           title="BLACK HACKERS TEAM Toolkit"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups allow-popups-to-escape-sandbox"
+          onLoad={() => console.log('Toolkit loaded successfully')}
+          onError={() => console.error('Failed to load toolkit')}
         />
       </div>
     );
